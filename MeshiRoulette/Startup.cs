@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MeshiRoulette.Data;
+using MeshiRoulette.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -35,8 +36,8 @@ namespace MeshiRoulette
                 options.UseSqlite(connectionString.ConnectionString);
             });
 
-            services.AddIdentity<ApplicationUser, IdentityRole<long>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddScoped(typeof(IUserStore<ApplicationUser>), typeof(ApplicationUserStore))
+                .AddIdentity<ApplicationUser, IdentityRole<long>>()
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication()
