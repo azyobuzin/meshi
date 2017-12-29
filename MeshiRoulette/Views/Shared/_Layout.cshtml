@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.css" />
+    <link rel="stylesheet" href="~/common.css" />
+</head>
+<body>
+    <div id="header" class="ui menu">
+        <div class="ui container">
+            <div class="header item">昼飯ルーレット</div>
+            <div class="right menu">
+                @await Html.PartialAsync("_LoginPartial")
+            </div>
+        </div>
+    </div>
+
+    <div id="logout-popup" class="ui popup bottom transition hidden">
+        <form id="logout-form" asp-controller="Account" asp-action="Logout" method="post" class="ui link list">
+            <a id="logout-link" class="item">ログアウト</a>
+        </form>
+    </div>
+
+    @RenderBody()
+
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.js"></script>
+    <script src="~/common.js"></script>
+</body>
+</html>

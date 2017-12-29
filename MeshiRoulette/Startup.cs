@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using MeshiRoulette.Data;
-using MeshiRoulette.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -36,8 +32,8 @@ namespace MeshiRoulette
                 options.UseSqlite(connectionString.ConnectionString);
             });
 
-            services.AddScoped(typeof(IUserStore<ApplicationUser>), typeof(ApplicationUserStore))
-                .AddIdentity<ApplicationUser, IdentityRole<long>>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication()
@@ -46,7 +42,15 @@ namespace MeshiRoulette
                     // 環境変数から指定
                     options.ConsumerKey = this.Configuration["Authentication:Twitter:ConsumerKey"];
                     options.ConsumerSecret = this.Configuration["Authentication:Twitter:ConsumerSecret"];
+
+                    options.SaveTokens = true;
+
+                    // 認証後にプロフィール画像を取得する
+                    options.RetrieveUserDetails = true;
+                    options.ClaimActions.MapJsonKey("urn:twitter:profileimage", "profile_image_url_https", ClaimTypes.Uri);
                 });
+
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -54,12 +58,13 @@ namespace MeshiRoulette
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseStaticFiles();
+            app.UseAuthentication();
+
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

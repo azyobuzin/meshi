@@ -1,15 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace MeshiRoulette.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions options)
             : base(options)
         {
         }
-
-        public DbSet<ApplicationUser> Users { get; set; }
 
         public DbSet<PlaceCollection> PlaceCollections { get; set; }
 
@@ -21,21 +20,18 @@ namespace MeshiRoulette.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // PlaceTag の複合 Unique
-            modelBuilder.Entity<PlaceTag>()
-                .HasIndex(x => new { x.Name, x.PlaceCollectionId })
-                .IsUnique();
+            base.OnModelCreating(modelBuilder);
 
             // Place, PlaceTag の many-to-many リレーション
-            modelBuilder.Entity<PlaceTagAssociation>(e =>
+            modelBuilder.Entity<PlaceTagAssociation>(b =>
             {
-                e.HasKey(a => new { a.PlaceId, a.TagId });
+                b.HasKey(a => new { a.PlaceId, a.TagId });
 
-                e.HasOne(a => a.Place)
+                b.HasOne(a => a.Place)
                     .WithMany(p => p.TagAssociations)
                     .HasForeignKey(a => a.PlaceId);
 
-                e.HasOne(a => a.Tag)
+                b.HasOne(a => a.Tag)
                     .WithMany(t => t.Associations)
                     .HasForeignKey(a => a.TagId);
             });

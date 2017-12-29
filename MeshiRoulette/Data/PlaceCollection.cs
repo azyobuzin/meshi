@@ -16,8 +16,6 @@ namespace MeshiRoulette.Data
 
         public List<Place> Places { get; set; }
 
-        public List<PlaceTag> PlaceTags { get; set; }
-
         public PlaceCollection()
         {
             this.Id = Guid.NewGuid().ToString("N");

@@ -1,0 +1,14 @@
+﻿@model string[]
+@{
+    ViewData["Title"] = "ログイン失敗";
+}
+
+<div class="ui container">
+    <h1 class="ui header">ログイン失敗</h1>
+    <ul>
+        @foreach (var error in Model)
+        {
+            <li>@error</li>
+        }
+    </ul>
+</div>

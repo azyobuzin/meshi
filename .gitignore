@@ -260,4 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 
+.vscode/
 launchSettings.json
+MeshiRoulette.sqlite3

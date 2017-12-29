@@ -1,0 +1,14 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using MeshiRoulette
+@using MeshiRoulette.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <a id="username" class="browse item">@((await UserManager.GetUserAsync(User)).ScreenName)</a>
+}
+else
+{
+    <a class="item" asp-controller="Account" asp-action="Login">Twitterでログイン</a>
+}

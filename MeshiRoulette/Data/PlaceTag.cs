@@ -8,9 +8,6 @@ namespace MeshiRoulette.Data
 
         public string Name { get; set; }
 
-        public string PlaceCollectionId { get; set; }
-        public PlaceCollection PlaceCollection { get; set; }
-
         public List<PlaceTagAssociation> Associations { get; set; }
     }
 }
