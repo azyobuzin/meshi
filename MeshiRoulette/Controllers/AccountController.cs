@@ -6,7 +6,7 @@ using MeshiRoulette.Data;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace MeshiRoulette.Controllers
 {
@@ -14,13 +14,13 @@ namespace MeshiRoulette.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IOptionsSnapshot<TwitterOptions> _twitterOptions;
+        private readonly ApplicationDbContext _dbContext;
 
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IOptionsSnapshot<TwitterOptions> twitterOptions)
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
         {
             this._signInManager = signInManager;
             this._userManager = userManager;
-            this._twitterOptions = twitterOptions;
+            this._dbContext = dbContext;
         }
 
         public IActionResult Login(string returnUrl = null)
@@ -35,7 +35,7 @@ namespace MeshiRoulette.Controllers
 
         public async Task<IActionResult> LoginCallback(string returnUrl = null, string remoteError = null)
         {
-            IActionResult LoginFailed(params string[] messages) => this.View(messages);
+            IActionResult LoginFailed(string message) => this.View(new[] { message });
 
             IdentityResult identityResult;
 
@@ -55,14 +55,7 @@ namespace MeshiRoulette.Controllers
             if (user == null)
             {
                 // 新規登録
-                user = new ApplicationUser()
-                {
-                    ScreenName = screenName,
-                    ProfileImage = profileImage,
-                    CreatedAt = DateTimeOffset.Now
-                };
-                user.UserName = user.Id; // Id は Guid なのでそれを流用
-
+                user = new ApplicationUser(screenName, profileImage, DateTimeOffset.Now);
                 identityResult = await this._userManager.CreateAsync(user);
                 if (!identityResult.Succeeded) goto IdentityError;
 
@@ -78,14 +71,35 @@ namespace MeshiRoulette.Controllers
                 if (!identityResult.Succeeded) goto IdentityError;
             }
 
-            await this._signInManager.SignInAsync(user, true);
+            await Task.WhenAll(
+                this._signInManager.SignInAsync(user, true),
+                this.UpdateTwitterScreenNameParticipant(user, screenName)
+            );
 
             return string.IsNullOrEmpty(returnUrl)
-                  ? (IActionResult)this.RedirectToAction("Index", "Home")
-                  : this.LocalRedirect(returnUrl);
+                ? (IActionResult)this.RedirectToAction("Index", "Home")
+                : this.LocalRedirect(returnUrl);
 
             IdentityError:
             return this.View(identityResult.Errors.Select(x => x.Description).ToArray());
+        }
+
+        /// <summary>
+        /// <see cref="UnregisteredPlaceCollectionParticipant"/> に一致するものがあれば、 <see cref="PlaceCollectionParticipant"/> に昇格
+        /// </summary>
+        private async Task UpdateTwitterScreenNameParticipant(ApplicationUser user, string twitterScreenName)
+        {
+            var existingParticipants = await this._dbContext.UnregisteredPlaceCollectionParticipants
+                .Where(x => x.ExternalIdType == ExternalIdType.TwitterScreenName && x.ExternalId == twitterScreenName)
+                .ToArrayAsync();
+
+            foreach (var up in existingParticipants)
+            {
+                this._dbContext.Add(new PlaceCollectionParticipant(up.PlaceCollectionId, user.Id, up.ParticipantType));
+                this._dbContext.Remove(up);
+            }
+
+            await this._dbContext.SaveChangesAsync();
         }
 
         [HttpPost, ValidateAntiForgeryToken]

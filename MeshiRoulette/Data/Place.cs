@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MeshiRoulette.Data
 {
@@ -15,5 +16,7 @@ namespace MeshiRoulette.Data
 
         public string PlaceCollectionId { get; set; }
         public PlaceCollection PlaceCollection { get; set; }
+
+        public DateTimeOffset CreatedAt { get; set; }
     }
 }

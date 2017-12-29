@@ -16,5 +16,16 @@ namespace MeshiRoulette.Data
         public string ProfileImage { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
+
+        public ApplicationUser() : base() { }
+
+        public ApplicationUser(string screenName, string profileImage, DateTimeOffset createdAt)
+            : base()
+        {
+            this.UserName = this.Id; // Id は Guid なのでそれを流用
+            this.ScreenName = screenName;
+            this.ProfileImage = profileImage;
+            this.CreatedAt = createdAt;
+        }
     }
 }

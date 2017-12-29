@@ -1,9 +1,11 @@
 ﻿using System.Security.Claims;
 using MeshiRoulette.Data;
+using MeshiRoulette.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -50,7 +52,11 @@ namespace MeshiRoulette
                     options.ClaimActions.MapJsonKey("urn:twitter:profileimage", "profile_image_url_https", ClaimTypes.Uri);
                 });
 
+            services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+
             services.AddMvc();
+
+            services.AddScoped(typeof(IPlaceCollectionAuthorization), typeof(PlaceCollectionAuthorization));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -64,7 +70,12 @@ namespace MeshiRoulette
             app.UseStaticFiles();
             app.UseAuthentication();
 
-            app.UseMvcWithDefaultRoute();
+            app.UseMvc(routes =>
+            {
+                // PlaceCollection は内部用の名前なので roulettes に書き換える
+                routes.MapRoute("PlaceCollections", "roulettes/{action=Index}/{id?}", new { controller = "PlaceCollections" });
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

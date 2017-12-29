@@ -12,6 +12,10 @@ namespace MeshiRoulette.Data
 
         public DbSet<PlaceCollection> PlaceCollections { get; set; }
 
+        public DbSet<PlaceCollectionParticipant> PlaceCollectionParticipants { get; set; }
+
+        public DbSet<UnregisteredPlaceCollectionParticipant> UnregisteredPlaceCollectionParticipants { get; set; }
+
         public DbSet<Place> Places { get; set; }
 
         public DbSet<PlaceTag> PlaceTags { get; set; }
@@ -21,6 +25,10 @@ namespace MeshiRoulette.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<PlaceTag>()
+                .HasIndex(x => x.Name)
+                .IsUnique();
 
             // Place, PlaceTag の many-to-many リレーション
             modelBuilder.Entity<PlaceTagAssociation>(b =>
@@ -35,6 +43,13 @@ namespace MeshiRoulette.Data
                     .WithMany(t => t.Associations)
                     .HasForeignKey(a => a.TagId);
             });
+
+            modelBuilder.Entity<PlaceCollectionParticipant>()
+                .HasIndex(x => new { x.PlaceCollectionId, x.UserId })
+                .IsUnique();
+
+            modelBuilder.Entity<UnregisteredPlaceCollectionParticipant>()
+                .HasIndex(x => x.ExternalId);
         }
     }
 }
