@@ -1,5 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using MeshiRoulette.Data;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 
 namespace MeshiRoulette.ViewModels
 {
@@ -20,6 +23,9 @@ namespace MeshiRoulette.ViewModels
         [Display(Name = "住所")]
         public string Address { get; set; }
 
+        [BindNever]
+        public List<string> Tags { get; set; }
+
         public string PlaceCollectionId { get; set; }
 
         public EditPlaceViewModel() { }
@@ -31,6 +37,7 @@ namespace MeshiRoulette.ViewModels
             this.Latitude = place.Latitude;
             this.Longitude = place.Longitude;
             this.Address = place.Address;
+            this.Tags = place.TagAssociations.ConvertAll(x => x.Tag.Name);
             this.PlaceCollectionId = place.PlaceCollectionId;
         }
 
@@ -41,5 +48,7 @@ namespace MeshiRoulette.ViewModels
             place.Longitude = this.Longitude;
             place.Address = this.Address;
         }
+
+        public string GetTagsJson() => JsonConvert.SerializeObject(this.Tags);
     }
 }

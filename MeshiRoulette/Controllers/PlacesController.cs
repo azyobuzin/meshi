@@ -63,7 +63,7 @@ namespace MeshiRoulette.Controllers
         }
 
         [HttpPost, Authorize, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string placeCollectionId, EditPlaceViewModel viewModel)
+        public async Task<IActionResult> Create(string placeCollectionId, EditPlaceViewModel viewModel, string tags)
         {
             if (placeCollectionId != viewModel.PlaceCollectionId)
                 return this.NotFound();
@@ -75,6 +75,14 @@ namespace MeshiRoulette.Controllers
             {
                 var place = new Place(viewModel.Name, viewModel.Latitude, viewModel.Longitude, viewModel.Address, placeCollectionId, DateTimeOffset.Now);
                 this._dbContext.Add(place);
+
+                switch (await PlaceTagManager.SetTagsToPlaceAsync(this._dbContext, place.Id, tags))
+                {
+                    case PlaceTagsActionResult.Success: break;
+                    case PlaceTagsActionResult.InvalidTagsData: return this.BadRequest();
+                    default: throw new Exception();
+                }
+
                 await this._dbContext.SaveChangesAsync();
 
                 return this.RedirectToAction(nameof(Details), new { place.Id });
@@ -90,6 +98,8 @@ namespace MeshiRoulette.Controllers
 
             var place = await this._dbContext.Places
                 .AsNoTracking()
+                .Include(x => x.TagAssociations)
+                .ThenInclude(x => x.Tag)
                 .SingleOrDefaultAsync(m => m.Id == id);
 
             if (place == null) return this.NotFound();
@@ -101,7 +111,7 @@ namespace MeshiRoulette.Controllers
         }
 
         [HttpPost, Authorize, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, EditPlaceViewModel viewModel)
+        public async Task<IActionResult> Edit(long id, EditPlaceViewModel viewModel, string tags)
         {
             if (id != viewModel.Id) return this.NotFound();
 
@@ -114,6 +124,13 @@ namespace MeshiRoulette.Controllers
                     return this.Unauthorized();
 
                 viewModel.ApplyTo(place);
+
+                switch (await PlaceTagManager.SetTagsToPlaceAsync(this._dbContext, place.Id, tags))
+                {
+                    case PlaceTagsActionResult.Success: break;
+                    case PlaceTagsActionResult.InvalidTagsData: return this.BadRequest();
+                    default: throw new Exception();
+                }
 
                 await this._dbContext.SaveChangesAsync();
 

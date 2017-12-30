@@ -11,5 +11,12 @@ namespace MeshiRoulette.Data
         public string Name { get; set; }
 
         public List<PlaceTagAssociation> Associations { get; set; }
+
+        public PlaceTag() { }
+
+        public PlaceTag(string name)
+        {
+            this.Name = name;
+        }
     }
 }

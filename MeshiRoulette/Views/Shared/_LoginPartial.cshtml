@@ -9,5 +9,7 @@
 }
 else
 {
-    <a class="item" asp-controller="Account" asp-action="Login">Twitterでログイン</a>
+    var request = ViewContext.HttpContext.Request;
+    var returnUrl = request.PathBase + request.Path + request.QueryString;
+    <a class="item" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl">Twitterでログイン</a>
 }
