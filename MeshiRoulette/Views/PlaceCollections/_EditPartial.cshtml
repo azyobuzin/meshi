@@ -1,0 +1,30 @@
+﻿@model EditPlaceCollectionViewModel
+
+<div class="ui container">
+    @await Html.PartialAsync("_ValidationErrorsPartial")
+    <form asp-action="@ViewContext.RouteData.Values["Action"]" class="ui form">
+        <div class="field">
+            <input asp-for="Name" placeholder="@Html.DisplayNameFor(model => model.Name)" />
+        </div>
+        <div class="field">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description"></textarea>
+        </div>
+        <div class="grouped field">
+            <label asp-for="Accessibility"></label>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input asp-for="Accessibility" tabindex="0" class="hidden" type="radio" value="@PlaceCollectionAccessibility.Public" />
+                    <label>公開</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input asp-for="Accessibility" tabindex="0" class="hidden" type="radio" value="@PlaceCollectionAccessibility.Private" />
+                    <label>非公開（リンクを共有した人は見ることができます）</label>
+                </div>
+            </div>
+        </div>
+        <button class="ui submit button">@ViewData["SubmitText"]</button>
+    </form>
+</div>

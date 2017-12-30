@@ -1,0 +1,14 @@
+﻿@if (!ViewData.ModelState.IsValid)
+{
+    <div class="ui error message">
+        <ul class="ui list">
+            @foreach (var message in ViewData.ModelState.Values
+                .SelectMany(x => x.Errors)
+                .Select(x => x.ErrorMessage)
+                .Where(x => !string.IsNullOrEmpty(x)))
+            {
+                <li>@message</li>
+            }
+        </ul>
+    </div>
+}

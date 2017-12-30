@@ -7,12 +7,13 @@ namespace MeshiRoulette.ViewModels
     {
         public string Id { get; set; }
 
-        [Required]
+        [Display(Name = "ルーレット名"), Required]
         public string Name { get; set; }
 
+        [Display(Name = "説明")]
         public string Description { get; set; }
 
-        [Range(1, 2)]
+        [Display(Name = "公開範囲")] // TODO: validation
         public PlaceCollectionAccessibility Accessibility { get; set; }
 
         public EditPlaceCollectionViewModel() { }
