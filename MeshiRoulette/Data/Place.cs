@@ -12,9 +12,20 @@ namespace MeshiRoulette.Data
         [Required]
         public string Name { get; set; }
 
+        /// <summary>
+        /// 緯度
+        /// </summary>
         public double? Latitude { get; set; }
 
+        /// <summary>
+        /// 経度
+        /// </summary>
         public double? Longitude { get; set; }
+
+        /// <summary>
+        /// 住所（なんでもいい）
+        /// </summary>
+        public string Address { get; set; }
 
         public List<PlaceTagAssociation> TagAssociations { get; set; }
 
@@ -25,11 +36,12 @@ namespace MeshiRoulette.Data
 
         public Place() { }
 
-        public Place(string name, double? latitude, double? longitude, string placeCollectionId, DateTimeOffset createdAt)
+        public Place(string name, double? latitude, double? longitude, string address, string placeCollectionId, DateTimeOffset createdAt)
         {
             this.Name = name;
             this.Latitude = latitude;
             this.Longitude = longitude;
+            this.Address = address;
             this.PlaceCollectionId = placeCollectionId;
             this.CreatedAt = createdAt;
         }

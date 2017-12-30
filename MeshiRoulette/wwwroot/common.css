@@ -1,3 +1,12 @@
 ﻿#header {
     border-radius: 0;
 }
+
+.roulette-description {
+    white-space: pre-line;
+}
+
+.place-add-container {
+    text-align: center;
+    margin-top: 1em;
+}

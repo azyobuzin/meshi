@@ -25,5 +25,12 @@ namespace MeshiRoulette.ViewModels
             this.Description = placeCollection.Description;
             this.Accessibility = placeCollection.Accessibility;
         }
+
+        public void ApplyTo(PlaceCollection placeCollection)
+        {
+            placeCollection.Name = this.Name;
+            placeCollection.Description = this.Description ?? "";
+            placeCollection.Accessibility = this.Accessibility;
+        }
     }
 }

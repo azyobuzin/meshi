@@ -27,8 +27,11 @@ namespace MeshiRoulette.Controllers
         {
             if (this._env.IsDevelopment())
             {
-                var places = this._dbContext.Places.Include(p => p.PlaceCollection);
-                return this.View(await places.ToListAsync());
+                var places = await this._dbContext.Places
+                    .AsNoTracking()
+                    .Include(p => p.PlaceCollection)
+                    .ToArrayAsync();
+                return this.View(places);
             }
             else
             {
@@ -41,6 +44,7 @@ namespace MeshiRoulette.Controllers
             if (id == null) return this.NotFound();
 
             var place = await this._dbContext.Places
+                .AsNoTracking()
                 .Include(p => p.PlaceCollection)
                 .SingleOrDefaultAsync(m => m.Id == id);
 
@@ -55,7 +59,7 @@ namespace MeshiRoulette.Controllers
             if (!await this._placeCollectionAuthorization.IsEditable(placeCollectionId, this.User))
                 return this.Unauthorized();
 
-            return this.View();
+            return this.View(new EditPlaceViewModel() { PlaceCollectionId = placeCollectionId });
         }
 
         [HttpPost, Authorize, ValidateAntiForgeryToken]
@@ -69,10 +73,11 @@ namespace MeshiRoulette.Controllers
 
             if (this.ModelState.IsValid)
             {
-                this._dbContext.Add(new Place(viewModel.Name, viewModel.Latitude, viewModel.Longitude, placeCollectionId, DateTimeOffset.Now));
+                var place = new Place(viewModel.Name, viewModel.Latitude, viewModel.Longitude, viewModel.Address, placeCollectionId, DateTimeOffset.Now);
+                this._dbContext.Add(place);
                 await this._dbContext.SaveChangesAsync();
 
-                return this.RedirectToPlaceCollection(placeCollectionId);
+                return this.RedirectToAction(nameof(Details), new { place.Id });
             }
 
             return this.View(viewModel);
@@ -83,7 +88,10 @@ namespace MeshiRoulette.Controllers
         {
             if (id == null) return this.NotFound();
 
-            var place = await this._dbContext.Places.SingleOrDefaultAsync(m => m.Id == id);
+            var place = await this._dbContext.Places
+                .AsNoTracking()
+                .SingleOrDefaultAsync(m => m.Id == id);
+
             if (place == null) return this.NotFound();
 
             if (!await this._placeCollectionAuthorization.IsEditable(place.PlaceCollectionId, this.User))
@@ -105,13 +113,11 @@ namespace MeshiRoulette.Controllers
                 if (!await this._placeCollectionAuthorization.IsEditable(place.PlaceCollectionId, this.User))
                     return this.Unauthorized();
 
-                place.Name = viewModel.Name;
-                place.Latitude = viewModel.Latitude;
-                place.Longitude = viewModel.Longitude;
+                viewModel.ApplyTo(place);
 
                 await this._dbContext.SaveChangesAsync();
 
-                return this.RedirectToPlaceCollection(place.PlaceCollectionId);
+                return this.RedirectToAction(nameof(Details), new { id });
             }
 
             return this.View(viewModel);

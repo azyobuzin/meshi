@@ -1,36 +1,61 @@
 ﻿@model PlaceCollection
+@inject IPlaceCollectionAuthorization PlaceCollectionAuthorization
 @{
     ViewData["Title"] = Model.Name + " - 昼飯ルーレット";
     ViewData["NoIndex"] = Model.Accessibility != PlaceCollectionAccessibility.Public;
 }
 
 <div class="ui container">
-<div>
-    <h4>PlaceCollection</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Accessibility)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Accessibility)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    <h1 class="ui dividing header">@Model.Name</h1>
+    @if (await PlaceCollectionAuthorization.IsEditable(Model.Id, User))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="ui right floated button">編集</a>
+    }
+    @if (Model.Accessibility != PlaceCollectionAccessibility.Public)
+    {
+        <p>
+            <i class="lock icon yellow"></i>
+            非公開
+        </p>
+    }
+    <p>
+        <img class="ui avatar image" src="@Model.Creator.ProfileImage" alt="@Model.Creator.ScreenName" />
+        @Model.Creator.ScreenName
+    </p>
+    <p class="roulette-description">@Model.Description</p>
+
+    @if (Model.Places.Count > 0)
+    {
+        <h3 class="ui horizontal divider header">ルーレット</h3>
+        <p style="text-align:center"><button class="ui primary button">まわれーまわれー(ﾟДﾟ)ﾉ</button></p>
+    }
+
+    <h3 class="ui horizontal divider header">場所</h3>
+    @if (Model.Places.Count > 0)
+    {
+        <div class="ui cards">
+            @foreach (var place in Model.Places)
+            {
+                <div class="card">
+                    <div class="content">
+                        <a asp-controller="Places" asp-action="Details" asp-route-id="@place.Id" class="header">@place.Name</a>
+                        @if (!string.IsNullOrEmpty(place.Address))
+                        {
+                            <div class="meta">@place.Address</div>
+                        }
+                        else if (place.Latitude.HasValue && place.Longitude.HasValue)
+                        {
+                            <div class="meta">@(place.Latitude), @place.Longitude</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <p class="place-add-container">
+        <a asp-controller="Places" asp-action="Create" asp-route-placeCollectionId="@Model.Id" class="ui positive button">
+            <i class="add icon"></i>
+            追加
+        </a>
+    </p>
 </div>

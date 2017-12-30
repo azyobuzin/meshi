@@ -3,18 +3,25 @@
 <div class="ui container">
     @await Html.PartialAsync("_ValidationErrorsPartial")
     <form asp-action="@ViewContext.RouteData.Values["Action"]" class="ui form">
+        <input asp-for="PlaceCollectionId" type="hidden" />
         <div class="field">
             <input asp-for="Name" placeholder="@Html.DisplayNameFor(model => model.Name)" />
         </div>
-        <div class="two fields">
-            <div class="field">
-                <label>座標</label>
-                <input asp-for="Latitude" placeholder="緯度（省略可能）" />
-            </div>
-            <div class="field">
-                <input asp-for="Longitude" placeholder="経度（省略可能）" />
+        <div class="field">
+            <label>座標</label>
+            <div class="two fields">
+                <div class="field">
+                    <input asp-for="Latitude" placeholder="緯度（省略可能）" />
+                </div>
+                <div class="field">
+                    <input asp-for="Longitude" placeholder="経度（省略可能）" />
+                </div>
             </div>
         </div>
-        <button class="ui submit button">@ViewData["SubmitText"]</button>
+        <div class="field">
+            <label asp-for="Address">住所</label>
+            <input asp-for="Address" placeholder="東京都足立区（省略可能）" />
+        </div>
+        <button class="ui submit primary button">@ViewData["SubmitText"]</button>
     </form>
 </div>

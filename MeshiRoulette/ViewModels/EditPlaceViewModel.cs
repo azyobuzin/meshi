@@ -17,6 +17,9 @@ namespace MeshiRoulette.ViewModels
         [Display(Name = "経度")]
         public double? Longitude { get; set; }
 
+        [Display(Name = "住所")]
+        public string Address { get; set; }
+
         public string PlaceCollectionId { get; set; }
 
         public EditPlaceViewModel() { }
@@ -27,7 +30,16 @@ namespace MeshiRoulette.ViewModels
             this.Name = place.Name;
             this.Latitude = place.Latitude;
             this.Longitude = place.Longitude;
+            this.Address = place.Address;
             this.PlaceCollectionId = place.PlaceCollectionId;
+        }
+
+        public void ApplyTo(Place place)
+        {
+            place.Name = this.Name;
+            place.Latitude = this.Latitude;
+            place.Longitude = this.Longitude;
+            place.Address = this.Address;
         }
     }
 }

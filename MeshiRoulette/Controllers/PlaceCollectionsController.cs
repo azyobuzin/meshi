@@ -31,7 +31,7 @@ namespace MeshiRoulette.Controllers
         {
             if (this._env.IsDevelopment())
             {
-                return this.View(await this._dbContext.PlaceCollections.ToListAsync());
+                return this.View(await this._dbContext.PlaceCollections.AsNoTracking().ToArrayAsync());
             }
             else
             {
@@ -41,17 +41,15 @@ namespace MeshiRoulette.Controllers
 
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null)
-            {
-                return this.NotFound();
-            }
+            if (id == null) return this.NotFound();
 
             var placeCollection = await this._dbContext.PlaceCollections
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (placeCollection == null)
-            {
-                return this.NotFound();
-            }
+                .AsNoTracking()
+                .Include(x => x.Creator)
+                .Include(x => x.Places)
+                .SingleOrDefaultAsync(x => x.Id == id);
+
+            if (placeCollection == null) return this.NotFound();
 
             return this.View(placeCollection);
         }
@@ -75,7 +73,7 @@ namespace MeshiRoulette.Controllers
 
                 await this._dbContext.SaveChangesAsync();
 
-                return this.RedirectToAction(nameof(Index));
+                return this.RedirectToAction(nameof(Details), new { placeCollection.Id });
             }
 
             return this.View(viewModel);
@@ -94,7 +92,9 @@ namespace MeshiRoulette.Controllers
                 return this.Unauthorized();
             }
 
-            var placeCollection = await this._dbContext.PlaceCollections.SingleOrDefaultAsync(m => m.Id == id);
+            var placeCollection = await this._dbContext.PlaceCollections
+                .AsNoTracking()
+                .SingleOrDefaultAsync(m => m.Id == id);
             if (placeCollection == null)
             {
                 return this.NotFound();
@@ -123,13 +123,10 @@ namespace MeshiRoulette.Controllers
 
                 if (placeCollection == null) return this.NotFound();
 
-                placeCollection.Name = viewModel.Name;
-                placeCollection.Description = viewModel.Description ?? "";
-                placeCollection.Accessibility = viewModel.Accessibility;
-
+                viewModel.ApplyTo(placeCollection);
                 await this._dbContext.SaveChangesAsync();
 
-                return this.RedirectToAction(nameof(Index));
+                return this.RedirectToAction(nameof(Details), new { id });
             }
 
             return this.View(viewModel);
