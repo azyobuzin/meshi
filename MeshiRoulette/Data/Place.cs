@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace MeshiRoulette.Data
 {
@@ -7,6 +8,9 @@ namespace MeshiRoulette.Data
     {
         /// <remarks><see cref="Place"/> にアクセスするときは <see cref="PlaceCollectionId"/> とセットで合っているか確認すること！</remarks>
         public long Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
 
         public double? Latitude { get; set; }
 
@@ -18,5 +22,16 @@ namespace MeshiRoulette.Data
         public PlaceCollection PlaceCollection { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
+
+        public Place() { }
+
+        public Place(string name, double? latitude, double? longitude, string placeCollectionId, DateTimeOffset createdAt)
+        {
+            this.Name = name;
+            this.Latitude = latitude;
+            this.Longitude = longitude;
+            this.PlaceCollectionId = placeCollectionId;
+            this.CreatedAt = createdAt;
+        }
     }
 }

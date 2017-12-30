@@ -1,0 +1,20 @@
+﻿@model EditPlaceViewModel
+
+<div class="ui container">
+    @await Html.PartialAsync("_ValidationErrorsPartial")
+    <form asp-action="@ViewContext.RouteData.Values["Action"]" class="ui form">
+        <div class="field">
+            <input asp-for="Name" placeholder="@Html.DisplayNameFor(model => model.Name)" />
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>座標</label>
+                <input asp-for="Latitude" placeholder="緯度（省略可能）" />
+            </div>
+            <div class="field">
+                <input asp-for="Longitude" placeholder="経度（省略可能）" />
+            </div>
+        </div>
+        <button class="ui submit button">@ViewData["SubmitText"]</button>
+    </form>
+</div>

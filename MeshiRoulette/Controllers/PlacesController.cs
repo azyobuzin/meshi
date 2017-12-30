@@ -1,159 +1,140 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using MeshiRoulette.Data;
+using MeshiRoulette.Services;
+using MeshiRoulette.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MeshiRoulette.Controllers
 {
     public class PlacesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IPlaceCollectionAuthorization _placeCollectionAuthorization;
+        private readonly IHostingEnvironment _env;
 
-        public PlacesController(ApplicationDbContext context)
+        public PlacesController(ApplicationDbContext dbContext, IPlaceCollectionAuthorization placeCollectionAuthorization, IHostingEnvironment env)
         {
-            _context = context;
+            this._dbContext = dbContext;
+            this._placeCollectionAuthorization = placeCollectionAuthorization;
+            this._env = env;
         }
 
-        // GET: Places
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Places.Include(p => p.PlaceCollection);
-            return View(await applicationDbContext.ToListAsync());
+            if (this._env.IsDevelopment())
+            {
+                var places = this._dbContext.Places.Include(p => p.PlaceCollection);
+                return this.View(await places.ToListAsync());
+            }
+            else
+            {
+                return this.NotFound();
+            }
         }
 
-        // GET: Places/Details/5
         public async Task<IActionResult> Details(long? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return this.NotFound();
 
-            var place = await _context.Places
+            var place = await this._dbContext.Places
                 .Include(p => p.PlaceCollection)
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (place == null)
+
+            if (place == null) return this.NotFound();
+
+            return this.View(place);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Create(string placeCollectionId)
+        {
+            if (!await this._placeCollectionAuthorization.IsEditable(placeCollectionId, this.User))
+                return this.Unauthorized();
+
+            return this.View();
+        }
+
+        [HttpPost, Authorize, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(string placeCollectionId, EditPlaceViewModel viewModel)
+        {
+            if (placeCollectionId != viewModel.PlaceCollectionId)
+                return this.NotFound();
+
+            if (!await this._placeCollectionAuthorization.IsEditable(placeCollectionId, this.User))
+                return this.Unauthorized();
+
+            if (this.ModelState.IsValid)
             {
-                return NotFound();
+                this._dbContext.Add(new Place(viewModel.Name, viewModel.Latitude, viewModel.Longitude, placeCollectionId, DateTimeOffset.Now));
+                await this._dbContext.SaveChangesAsync();
+
+                return this.RedirectToPlaceCollection(placeCollectionId);
             }
 
-            return View(place);
+            return this.View(viewModel);
         }
 
-        // GET: Places/Create
-        public IActionResult Create()
-        {
-            ViewData["PlaceCollectionId"] = new SelectList(_context.PlaceCollections, "Id", "Id");
-            return View();
-        }
-
-        // POST: Places/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Latitude,Longitude,PlaceCollectionId,CreatedAt")] Place place)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(place);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["PlaceCollectionId"] = new SelectList(_context.PlaceCollections, "Id", "Id", place.PlaceCollectionId);
-            return View(place);
-        }
-
-        // GET: Places/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(long? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return this.NotFound();
 
-            var place = await _context.Places.SingleOrDefaultAsync(m => m.Id == id);
-            if (place == null)
-            {
-                return NotFound();
-            }
-            ViewData["PlaceCollectionId"] = new SelectList(_context.PlaceCollections, "Id", "Id", place.PlaceCollectionId);
-            return View(place);
+            var place = await this._dbContext.Places.SingleOrDefaultAsync(m => m.Id == id);
+            if (place == null) return this.NotFound();
+
+            if (!await this._placeCollectionAuthorization.IsEditable(place.PlaceCollectionId, this.User))
+                return this.Unauthorized();
+
+            return this.View(new EditPlaceViewModel(place));
         }
 
-        // POST: Places/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Latitude,Longitude,PlaceCollectionId,CreatedAt")] Place place)
+        [HttpPost, Authorize, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(long id, EditPlaceViewModel viewModel)
         {
-            if (id != place.Id)
+            if (id != viewModel.Id) return this.NotFound();
+
+            if (this.ModelState.IsValid)
             {
-                return NotFound();
+                var place = await this._dbContext.Places.SingleOrDefaultAsync(x => x.Id == id);
+
+                if (place == null) return this.NotFound();
+                if (!await this._placeCollectionAuthorization.IsEditable(place.PlaceCollectionId, this.User))
+                    return this.Unauthorized();
+
+                place.Name = viewModel.Name;
+                place.Latitude = viewModel.Latitude;
+                place.Longitude = viewModel.Longitude;
+
+                await this._dbContext.SaveChangesAsync();
+
+                return this.RedirectToPlaceCollection(place.PlaceCollectionId);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(place);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PlaceExists(place.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["PlaceCollectionId"] = new SelectList(_context.PlaceCollections, "Id", "Id", place.PlaceCollectionId);
-            return View(place);
+            return this.View(viewModel);
         }
 
-        // GET: Places/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        [HttpPost, Authorize, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(long id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var place = await this._dbContext.Places.SingleOrDefaultAsync(m => m.Id == id);
 
-            var place = await _context.Places
-                .Include(p => p.PlaceCollection)
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (place == null)
-            {
-                return NotFound();
-            }
+            if (place == null) return this.NotFound();
+            if (!await this._placeCollectionAuthorization.IsEditable(place.PlaceCollectionId, this.User))
+                return this.Unauthorized();
 
-            return View(place);
+            this._dbContext.Places.Remove(place);
+            await this._dbContext.SaveChangesAsync();
+
+            return this.RedirectToPlaceCollection(place.PlaceCollectionId);
         }
 
-        // POST: Places/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        private IActionResult RedirectToPlaceCollection(string placeCollectionId)
         {
-            var place = await _context.Places.SingleOrDefaultAsync(m => m.Id == id);
-            _context.Places.Remove(place);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool PlaceExists(long id)
-        {
-            return _context.Places.Any(e => e.Id == id);
+            return this.RedirectToAction("Details", "PlaceCollections", new { id = placeCollectionId });
         }
     }
 }

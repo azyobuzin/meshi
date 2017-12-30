@@ -3,6 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+    @if (ViewBag.NoIndex == true)
+    {
+        <meta name="robots" content="noindex" />
+    }
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.css" />
     <link rel="stylesheet" href="~/common.css" />

@@ -74,6 +74,7 @@ namespace MeshiRoulette
             {
                 // PlaceCollection は内部用の名前なので roulettes に書き換える
                 routes.MapRoute("PlaceCollections", "roulettes/{action=Index}/{id?}", new { controller = "PlaceCollections" });
+
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }

@@ -4,6 +4,7 @@ using MeshiRoulette.Data;
 using MeshiRoulette.Services;
 using MeshiRoulette.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,22 +16,29 @@ namespace MeshiRoulette.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPlaceCollectionAuthorization _placeCollectionAuthorization;
+        private readonly IHostingEnvironment _env;
 
         public PlaceCollectionsController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager,
-            IPlaceCollectionAuthorization placeCollectionAuthorization)
+            IPlaceCollectionAuthorization placeCollectionAuthorization, IHostingEnvironment env)
         {
             this._dbContext = dbContext;
             this._userManager = userManager;
             this._placeCollectionAuthorization = placeCollectionAuthorization;
+            this._env = env;
         }
 
-        // GET: PlaceCollections
-        // TODO: あとで要らなくなるはず
         public async Task<IActionResult> Index()
         {
-            return this.View(await this._dbContext.PlaceCollections.ToListAsync());
+            if (this._env.IsDevelopment())
+            {
+                return this.View(await this._dbContext.PlaceCollections.ToListAsync());
+            }
+            else
+            {
+                return this.NotFound();
+            }
         }
-        
+
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
