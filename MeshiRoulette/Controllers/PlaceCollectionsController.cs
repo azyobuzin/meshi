@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MeshiRoulette.Data;
 using MeshiRoulette.Services;
@@ -47,6 +48,8 @@ namespace MeshiRoulette.Controllers
                 .AsNoTracking()
                 .Include(x => x.Creator)
                 .Include(x => x.Places)
+                .ThenInclude(x => x.TagAssociations)
+                .ThenInclude(x => x.Tag)
                 .SingleOrDefaultAsync(x => x.Id == id);
 
             if (placeCollection == null) return this.NotFound();
@@ -145,6 +148,30 @@ namespace MeshiRoulette.Controllers
             await this._dbContext.SaveChangesAsync();
 
             return this.RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> RouletteData(string id)
+        {
+            var places = await this._dbContext.Places
+                .AsNoTracking()
+                .Where(x => x.PlaceCollectionId == id)
+                .Include(x => x.TagAssociations)
+                .ToArrayAsync();
+
+            var tagIds = places.SelectMany(x => x.TagAssociations)
+                .Select(x => x.TagId)
+                .Distinct()
+                .ToArray();
+
+            var tags = await this._dbContext.PlaceTags
+                .Where(x => tagIds.Contains(x.Id))
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
+            return this.Json(new
+            {
+                places = places.Select(x => new { id = x.Id, name = x.Name, tags = x.TagAssociations.Select(y => y.TagId) }),
+                tags
+            });
         }
     }
 }

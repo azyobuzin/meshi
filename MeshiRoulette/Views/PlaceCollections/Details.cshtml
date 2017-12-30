@@ -27,7 +27,10 @@
     @if (Model.Places.Count > 0)
     {
         <h3 class="ui horizontal divider header">ルーレット</h3>
-        <p style="text-align:center"><button class="ui primary button">まわれーまわれー(ﾟДﾟ)ﾉ</button></p>
+        <div id="roulette-container">
+            <button class="ui primary loading button">まわれーまわれー(ﾟДﾟ)ﾉ</button>
+        </div>
+        <!--<p style="text-align:center"><button class="ui primary toggle button">まわれーまわれー(ﾟДﾟ)ﾉ</button></p>-->
     }
 
     <h3 class="ui horizontal divider header">場所</h3>
@@ -47,6 +50,17 @@
                         {
                             <div class="meta">@(place.Latitude), @place.Longitude</div>
                         }
+                        @if (place.TagAssociations.Count > 0)
+                        {
+                            <div class="description">
+                                <div class="ui small tag labels">
+                                    @foreach (var tagAssociation in place.TagAssociations)
+                                    {
+                                        <div class="ui label">@tagAssociation.Tag.Name</div>
+                                    }
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             }
@@ -59,3 +73,9 @@
         </a>
     </p>
 </div>
+
+@section Scripts {
+    <script>var rouletteDataUrl = "@Url.Action("RouletteData", new { Model.Id })";</script>
+    <script src="https://unpkg.com/hyperapp"></script>
+    <script src="~/roulette.js"></script>
+}
