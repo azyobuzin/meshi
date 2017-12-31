@@ -165,7 +165,9 @@ namespace MeshiRoulette.Controllers
 
             var tags = await this._dbContext.PlaceTags
                 .Where(x => tagIds.Contains(x.Id))
-                .ToDictionaryAsync(x => x.Id, x => x.Name);
+                .OrderBy(x => x.Name)
+                .Select(x => new { id = x.Id, name = x.Name })
+                .ToArrayAsync();
 
             return this.Json(new
             {

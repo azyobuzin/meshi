@@ -59,10 +59,10 @@ var tagsActions = (function () {
             ]);
         });
 
-        return h("div", {}, [
-            h("div", { class: "field" + (state.isInputError ? " error" : "") }, [
+        return h("div", {},
+            h("div", { class: "field" + (state.isInputError ? " error" : "") },
                 h("label", { for: "tag-input" }, "タグ"),
-                h("div", { class: "ui right labeled input" }, [
+                h("div", { class: "ui right labeled input" },
                     h("input", {
                         id: "tag-input",
                         type: "text",
@@ -78,10 +78,10 @@ var tagsActions = (function () {
                         }
                     }),
                     h("button", { class: "ui tag label", type: "button", onclick: function () { actions.addTag(); } }, "追加")
-                ])
-            ]),
+                )
+            ),
             h("div", { id: "tags-container", class: "ui tag labels" }, tagElements)
-        ]);
+        );
     }
 
     return hyperapp.app(state, actions, view, document.getElementById("tags-view"));
