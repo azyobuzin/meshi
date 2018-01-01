@@ -29,6 +29,7 @@ namespace MeshiRoulette.Data
 
         public List<PlaceTagAssociation> TagAssociations { get; set; }
 
+        [Required]
         public string PlaceCollectionId { get; set; }
         public PlaceCollection PlaceCollection { get; set; }
 

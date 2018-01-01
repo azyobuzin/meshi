@@ -11,15 +11,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.css" />
     <link rel="stylesheet" href="~/common.css" />
 </head>
-<body>
-    <div id="header" class="ui menu">
+<body class="@(ViewBag.HasFooter == true ? "has-footer" : "")">
+    <header class="main-header ui menu">
         <div class="ui container">
             <a asp-controller="Home" asp-action="Index" class="header item">昼飯ルーレット</a>
             <div class="right menu">
                 @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
-    </div>
+    </header>
 
     <div id="logout-popup" class="ui popup bottom transition hidden">
         <form id="logout-form" asp-controller="Account" asp-action="Logout" method="post" class="ui link list">

@@ -7,10 +7,27 @@
 
 <div class="ui container">
     <h1 class="ui dividing header">@Model.Name</h1>
+
+    @if (await PlaceCollectionAuthorization.IsAdministrator(Model.Id, User))
+    {
+        <form id="delete-form" asp-action="Delete" asp-route-id="@Model.Id"></form>
+        <button id="delete-btn" class="ui right floated negative button">削除</button>
+        <div id="delete-modal" class="ui modal">
+            <div class="header">削除</div>
+            <div class="content">
+                <p>このルーレットを削除します。この操作は元に戻せません。</p>
+            </div>
+            <div class="actions">
+                <div class="ui cancel button">キャンセル</div>
+                <div class="ui negative ok button">削除</div>
+            </div>
+        </div>
+    }
     @if (await PlaceCollectionAuthorization.IsEditable(Model.Id, User))
     {
         <a asp-action="Edit" asp-route-id="@Model.Id" class="ui right floated button">編集</a>
     }
+
     @if (Model.Accessibility != PlaceCollectionAccessibility.Public)
     {
         <p>
@@ -78,4 +95,7 @@
     <script>var rouletteDataUrl = "@Url.Action("RouletteData", new { Model.Id })";</script>
     <script src="https://unpkg.com/hyperapp"></script>
     <script src="~/roulette.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/dimmer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/modal.min.js"></script>
+    <script src="~/delete.js"></script>
 }

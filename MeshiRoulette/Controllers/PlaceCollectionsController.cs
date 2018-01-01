@@ -32,7 +32,7 @@ namespace MeshiRoulette.Controllers
         {
             if (this._env.IsDevelopment())
             {
-                return this.View(await this._dbContext.PlaceCollections.AsNoTracking().ToArrayAsync());
+                return this.View(await this._dbContext.PlaceCollections.AsNoTracking().ToListAsync());
             }
             else
             {
@@ -60,7 +60,7 @@ namespace MeshiRoulette.Controllers
         [Authorize]
         public IActionResult Create()
         {
-            return this.View();
+            return this.View(new EditPlaceCollectionViewModel() { Accessibility = PlaceCollectionAccessibility.Public });
         }
 
         [HttpPost, Authorize, ValidateAntiForgeryToken]
@@ -133,15 +133,13 @@ namespace MeshiRoulette.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             if (!await this._placeCollectionAuthorization.IsAdministrator(id, this.User))
-            {
                 return this.Unauthorized();
-            }
 
-            var placeCollection = await this._dbContext.PlaceCollections.SingleOrDefaultAsync(m => m.Id == id);
+            var placeCollection = await this._dbContext.PlaceCollections.SingleAsync(m => m.Id == id);
             this._dbContext.PlaceCollections.Remove(placeCollection);
             await this._dbContext.SaveChangesAsync();
 
-            return this.RedirectToAction(nameof(Index));
+            return this.RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> RouletteData(string id)

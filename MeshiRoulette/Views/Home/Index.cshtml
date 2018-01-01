@@ -1,5 +1,38 @@
-﻿@{ 
+﻿@model IEnumerable<HomePlaceCollectionViewModel>
+@{
     ViewData["Title"] = "昼飯ルーレット ランチスポットの記録と共有";
+    ViewData["HasFooter"] = true;
 }
 
-<p>なにもない</p>
+<div id="top-head" class="ui container">
+    <div class="ui huge header">昼飯は運に任せろ。</div>
+    <a asp-controller="PlaceCollections" asp-action="Create" class="ui big positive button">ルーレットをつくる</a>
+</div>
+
+<div id="top-content" class="ui container">
+    <div class="ui warning message">実験的に運用しているので、仕様変更や手違いでデータが消える可能性があります。エクスポート機能つくっておかなきゃなぁ……。</div>
+    <h3 class="ui horizontal divider header">公開されているルーレット</h3>
+    <div class="ui cards">
+        @foreach (var vm in Model)
+        {
+            <article class="card">
+                <div class="content">
+                    <img class="right floated mini ui image" src="@vm.CreatorProfileImage" />
+                    <a class="header" asp-controller="PlaceCollections" asp-action="Details" asp-route-id="@vm.Id">@vm.Name</a>
+                    <div class="description roulette-description">@vm.Description</div>
+                </div>
+                <div class="extra content">
+                    <span class="right floated">@vm.CreatedAt.ToString("d")</span>
+                    <span>
+                        <i class="marker icon"></i>
+                        @vm.PlaceCount
+                    </span>
+                </div>
+            </article>
+        }
+    </div>
+</div>
+
+<footer class="main-footer ui inverted vertical segment">
+    <a class="ui header" href="https://github.com/azyobuzin/meshi" title="GitHub"><i class="github icon"></i></a>
+</footer>

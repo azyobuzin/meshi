@@ -30,7 +30,7 @@ namespace MeshiRoulette.Controllers
                 var places = await this._dbContext.Places
                     .AsNoTracking()
                     .Include(p => p.PlaceCollection)
-                    .ToArrayAsync();
+                    .ToListAsync();
                 return this.View(places);
             }
             else
@@ -46,6 +46,8 @@ namespace MeshiRoulette.Controllers
             var place = await this._dbContext.Places
                 .AsNoTracking()
                 .Include(p => p.PlaceCollection)
+                .Include(x => x.TagAssociations)
+                .ThenInclude(x => x.Tag)
                 .SingleOrDefaultAsync(m => m.Id == id);
 
             if (place == null) return this.NotFound();
@@ -129,7 +131,7 @@ namespace MeshiRoulette.Controllers
         public async Task<IActionResult> Edit(long id, EditPlaceViewModel viewModel, string tags)
         {
             if (id != viewModel.Id) return this.NotFound();
-            
+
             var place = await this._dbContext.Places.SingleOrDefaultAsync(x => x.Id == id);
             if (place == null) return this.NotFound();
 

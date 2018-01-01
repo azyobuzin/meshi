@@ -1,5 +1,30 @@
-﻿#header {
-    border-radius: 0;
+﻿.main-header {
+    border-radius: 0 !important;
+    border-top-style: none !important;
+    border-left-style: none !important;
+    border-right-style: none !important;
+}
+
+/* https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/ */
+.has-footer {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+#top-head {
+    text-align: center;
+    padding-top: 3em;
+    padding-bottom: 3em;
+}
+
+#top-content {
+    flex: 1;
+}
+
+.main-footer {
+    margin-top: 3em !important;
+    text-align: center;
 }
 
 .roulette-description {
@@ -26,4 +51,14 @@
 
 .edit.breadcrumb {
     margin-bottom: 1em !important;
+}
+
+form.button button {
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    color: inherit;
+    font-family: inherit;
+    font-weight: inherit;
 }

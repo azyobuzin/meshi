@@ -1,42 +1,65 @@
 ﻿@model Place
+@inject IPlaceCollectionAuthorization PlaceCollectionAuthorization
 @{
     ViewData["Title"] = Model.Name + " - 昼飯ルーレット";
     ViewData["NoIndex"] = Model.PlaceCollection.Accessibility != PlaceCollectionAccessibility.Public;
 }
 
 <div class="ui container">
-<div>
-    <h4>Place</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Latitude)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Latitude)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Longitude)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Longitude)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PlaceCollection)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PlaceCollection.Id)
-        </dd>
-    </dl>
+    <div class="ui breadcrumb">
+        <a class="section" asp-controller="PlaceCollections" asp-action="Details" asp-route-id="@Model.PlaceCollectionId">@Model.PlaceCollection.Name</a>
+        <i class="right angle icon divider"></i>
+        <div class="active section">@Model.Name</div>
+    </div>
+
+    <h1 class="ui dividing header">@Model.Name</h1>
+
+    @if (await PlaceCollectionAuthorization.IsEditable(Model.PlaceCollectionId, User))
+    {
+        <button id="delete-btn" class="ui right floated negative button">削除</button>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="ui right floated button">編集</a>
+
+        <form id="delete-form" asp-action="Delete" asp-route-id="@Model.Id"></form>
+        <div id="delete-modal" class="ui modal">
+            <div class="header">削除</div>
+            <div class="content">
+                <p>この場所をルーレットから削除します。この操作は元に戻せません。</p>
+            </div>
+            <div class="actions">
+                <div class="ui cancel button">キャンセル</div>
+                <div class="ui negative ok button">削除</div>
+            </div>
+        </div>
+    }
+
+    @if (Model.TagAssociations.Count > 0)
+    {
+        <div id="tags-container" class="ui tag labels">
+            @foreach (var tagAssociation in Model.TagAssociations)
+            {
+                <div class="ui label">@tagAssociation.Tag.Name</div>
+            }
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.Address))
+    {
+        <p><i class="marker icon"></i> @Model.Address</p>
+    }
+
+    @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+    {
+        <p>
+            <a class="ui button" href="http://maps.google.com/maps?q=@Model.Latitude.Value.ToString("F7", CultureInfo.InvariantCulture),@Model.Longitude.Value.ToString("F7", CultureInfo.InvariantCulture)">
+                <i class="map icon"></i>
+                Google マップで開く
+            </a>
+        </p>
+    }
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
-</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/dimmer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/modal.min.js"></script>
+    <script src="~/delete.js"></script>
+}
