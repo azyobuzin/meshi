@@ -2,7 +2,19 @@
 @{
     ViewData["Title"] = "（編集）" + Model.Name + " - 昼飯ルーレット";
     ViewData["NoIndex"] = true;
-    ViewData["SubmitText"] = "更新";
 }
 
+<div class="ui container">
+    <div class="edit ui breadcrumb">
+        <a class="section" asp-action="Details" asp-route-id="@Model.Id">@Model.ExistingName</a>
+        <i class="right angle icon divider"></i>
+        <div class="active section">編集</div>
+    </div>
+</div>
+
 @await Html.PartialAsync("_EditPartial")
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/checkbox.min.js"></script>
+    <script src="~/editplacecollection.js"></script>
+}

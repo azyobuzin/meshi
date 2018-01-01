@@ -11,10 +11,19 @@
     margin-top: 1em;
 }
 
-#tags-container {
+#tags-container, #tag-cond-container {
     margin-bottom: 1em;
 }
 
 #roulette-container {
     text-align: center;
+}
+
+#tag-cond-container .field {
+    display: inline-block;
+    padding-right: 1em;
+}
+
+.edit.breadcrumb {
+    margin-bottom: 1em !important;
 }

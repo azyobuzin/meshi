@@ -56,17 +56,23 @@ namespace MeshiRoulette.Controllers
         [Authorize]
         public async Task<IActionResult> Create(string placeCollectionId)
         {
+            if (placeCollectionId == null) return this.BadRequest();
+
             if (!await this._placeCollectionAuthorization.IsEditable(placeCollectionId, this.User))
                 return this.Unauthorized();
 
-            return this.View(new EditPlaceViewModel() { PlaceCollectionId = placeCollectionId });
+            var placeCollection = await this._dbContext.PlaceCollections
+                .AsNoTracking()
+                .SingleAsync(x => x.Id == placeCollectionId);
+
+            return this.View(new EditPlaceViewModel(placeCollection));
         }
 
         [HttpPost, Authorize, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string placeCollectionId, EditPlaceViewModel viewModel, string tags)
+        public async Task<IActionResult> Create(EditPlaceViewModel viewModel, string tags)
         {
-            if (placeCollectionId != viewModel.PlaceCollectionId)
-                return this.NotFound();
+            var placeCollectionId = viewModel.PlaceCollectionId;
+            if (placeCollectionId == null) return this.BadRequest();
 
             if (!await this._placeCollectionAuthorization.IsEditable(placeCollectionId, this.User))
                 return this.Unauthorized();
@@ -88,6 +94,14 @@ namespace MeshiRoulette.Controllers
                 return this.RedirectToAction(nameof(Details), new { place.Id });
             }
 
+            viewModel.Tags = PlaceTagManager.ParseTagsData(tags); // 不正なデータのチェックも兼ねて一度 parse
+
+            var placeCollection = await this._dbContext.PlaceCollections
+               .AsNoTracking()
+               .SingleAsync(x => x.Id == placeCollectionId);
+
+            viewModel.PlaceCollectionName = placeCollection.Name;
+
             return this.View(viewModel);
         }
 
@@ -98,6 +112,7 @@ namespace MeshiRoulette.Controllers
 
             var place = await this._dbContext.Places
                 .AsNoTracking()
+                .Include(x => x.PlaceCollection)
                 .Include(x => x.TagAssociations)
                 .ThenInclude(x => x.Tag)
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -114,15 +129,15 @@ namespace MeshiRoulette.Controllers
         public async Task<IActionResult> Edit(long id, EditPlaceViewModel viewModel, string tags)
         {
             if (id != viewModel.Id) return this.NotFound();
+            
+            var place = await this._dbContext.Places.SingleOrDefaultAsync(x => x.Id == id);
+            if (place == null) return this.NotFound();
+
+            if (!await this._placeCollectionAuthorization.IsEditable(place.PlaceCollectionId, this.User))
+                return this.Unauthorized();
 
             if (this.ModelState.IsValid)
             {
-                var place = await this._dbContext.Places.SingleOrDefaultAsync(x => x.Id == id);
-
-                if (place == null) return this.NotFound();
-                if (!await this._placeCollectionAuthorization.IsEditable(place.PlaceCollectionId, this.User))
-                    return this.Unauthorized();
-
                 viewModel.ApplyTo(place);
 
                 switch (await PlaceTagManager.SetTagsToPlaceAsync(this._dbContext, place.Id, tags))
@@ -136,6 +151,15 @@ namespace MeshiRoulette.Controllers
 
                 return this.RedirectToAction(nameof(Details), new { id });
             }
+
+            viewModel.ExistingName = place.Name;
+            viewModel.Tags = PlaceTagManager.ParseTagsData(tags);
+
+            var placeCollection = await this._dbContext.PlaceCollections
+                .AsNoTracking()
+                .SingleAsync(x => x.Id == place.PlaceCollectionId);
+
+            viewModel.PlaceCollectionName = placeCollection.Name;
 
             return this.View(viewModel);
         }

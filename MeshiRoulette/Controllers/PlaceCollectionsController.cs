@@ -109,29 +109,23 @@ namespace MeshiRoulette.Controllers
         [HttpPost, Authorize, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, EditPlaceCollectionViewModel viewModel)
         {
-            if (id != viewModel.Id)
-            {
-                return this.NotFound();
-            }
+            if (id != viewModel.Id) return this.NotFound();
+
+            var placeCollection = await this._dbContext.PlaceCollections.SingleOrDefaultAsync(x => x.Id == id);
+            if (placeCollection == null) return this.NotFound();
 
             if (!await this._placeCollectionAuthorization.IsEditable(id, this.User))
-            {
                 return this.Unauthorized();
-            }
 
             if (this.ModelState.IsValid)
             {
-                var placeCollection = await this._dbContext.PlaceCollections
-                    .SingleOrDefaultAsync(x => x.Id == id);
-
-                if (placeCollection == null) return this.NotFound();
-
                 viewModel.ApplyTo(placeCollection);
                 await this._dbContext.SaveChangesAsync();
 
                 return this.RedirectToAction(nameof(Details), new { id });
             }
 
+            viewModel.ExistingName = placeCollection.Name;
             return this.View(viewModel);
         }
 

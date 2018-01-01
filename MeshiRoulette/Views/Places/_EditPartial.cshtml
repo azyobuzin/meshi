@@ -1,6 +1,20 @@
 ﻿@model EditPlaceViewModel
 
 <div class="ui container">
+    <div class="edit ui breadcrumb">
+        <a class="section" asp-controller="PlaceCollections" asp-action="Details" asp-route-id="@Model.PlaceCollectionId">@Model.PlaceCollectionName</a>
+        <i class="right angle icon divider"></i>
+        @if (Model.ExistingName == null)
+        {
+            <div class="active section">場所を追加</div>
+        }
+        else
+        {
+            <a class="section" asp-action="Details" asp-route-id="@Model.Id">@Model.ExistingName</a>
+            <i class="right angle icon divider"></i>
+            <div class="active section">編集</div>
+        }
+    </div>
     @await Html.PartialAsync("_ValidationErrorsPartial")
     <form asp-action="@ViewContext.RouteData.Values["Action"]" id="edit-place-form" class="ui form">
         <input asp-for="PlaceCollectionId" type="hidden" />
@@ -23,8 +37,11 @@
             <label asp-for="Address"></label>
             <input asp-for="Address" placeholder="東京都足立区（省略可能）" />
         </div>
-        <div id="tags-view">@* editplace.js から操作 *@</div>
-        <button class="ui submit primary button">@ViewData["SubmitText"]</button>
+        <div id="tags-view">
+            @* editplace.js から操作 *@
+            <div class="ui active centered inline loader"></div>
+        </div>
+        <button class="ui submit primary button">@(Model.ExistingName == null ? "追加" : "更新")</button>
     </form>
 </div>
 

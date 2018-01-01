@@ -25,6 +25,6 @@
                 </div>
             </div>
         </div>
-        <button class="ui submit primary button">@ViewData["SubmitText"]</button>
+        <button class="ui submit primary button">@(Model.ExistingName == null ? "作成" : "更新")</button>
     </form>
 </div>

@@ -14,7 +14,7 @@
 <body>
     <div id="header" class="ui menu">
         <div class="ui container">
-            <div class="header item">昼飯ルーレット</div>
+            <a asp-controller="Home" asp-action="Index" class="header item">昼飯ルーレット</a>
             <div class="right menu">
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -31,7 +31,8 @@
 
     @* スクリプト削りたいよな…… *@
     <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/transition.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/popup.min.js"></script>
     <script src="~/common.js"></script>
     @RenderSection("Scripts", required: false)
 </body>

@@ -10,7 +10,7 @@ namespace MeshiRoulette.Services
     public static class PlaceTagManager
     {
         /// <returns>不正なデータなら <c>null</c></returns>
-        private static List<string> ParseTagsData(string tagsData)
+        public static List<string> ParseTagsData(string tagsData)
         {
             try
             {

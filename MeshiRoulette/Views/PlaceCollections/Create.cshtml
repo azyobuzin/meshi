@@ -2,7 +2,11 @@
 @{
     ViewData["Title"] = "ルーレット作成 - 昼飯ルーレット";
     ViewData["NoIndex"] = true;
-    ViewData["SubmitText"] = "作成";
 }
 
 @await Html.PartialAsync("_EditPartial")
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/checkbox.min.js"></script>
+    <script src="~/editplacecollection.js"></script>
+}

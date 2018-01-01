@@ -59,7 +59,7 @@ var tagsActions = (function () {
             ]);
         });
 
-        return h("div", {},
+        return h("div", { class: "" /* loader を消す */ },
             h("div", { class: "field" + (state.isInputError ? " error" : "") },
                 h("label", { for: "tag-input" }, "タグ"),
                 h("div", { class: "ui right labeled input" },
