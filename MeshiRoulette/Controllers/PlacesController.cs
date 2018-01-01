@@ -39,9 +39,9 @@ namespace MeshiRoulette.Controllers
             }
         }
 
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(string placeCollectionId, long? id)
         {
-            if (id == null) return this.NotFound();
+            if (placeCollectionId == null || id == null) return this.NotFound();
 
             var place = await this._dbContext.Places
                 .AsNoTracking()
@@ -50,7 +50,8 @@ namespace MeshiRoulette.Controllers
                 .ThenInclude(x => x.Tag)
                 .SingleOrDefaultAsync(m => m.Id == id);
 
-            if (place == null) return this.NotFound();
+            if (place == null || place.PlaceCollectionId != placeCollectionId)
+                return this.NotFound();
 
             return this.View(place);
         }
@@ -93,7 +94,7 @@ namespace MeshiRoulette.Controllers
 
                 await this._dbContext.SaveChangesAsync();
 
-                return this.RedirectToAction(nameof(Details), new { place.Id });
+                return this.RedirectToAction(nameof(Details), new { placeCollectionId, place.Id });
             }
 
             viewModel.Tags = PlaceTagManager.ParseTagsData(tags); // 不正なデータのチェックも兼ねて一度 parse
@@ -151,7 +152,7 @@ namespace MeshiRoulette.Controllers
 
                 await this._dbContext.SaveChangesAsync();
 
-                return this.RedirectToAction(nameof(Details), new { id });
+                return this.RedirectToAction(nameof(Details), new { place.PlaceCollectionId, id });
             }
 
             viewModel.ExistingName = place.Name;

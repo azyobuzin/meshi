@@ -10,7 +10,7 @@
         }
         else
         {
-            <a class="section" asp-action="Details" asp-route-id="@Model.Id">@Model.ExistingName</a>
+            <a class="section" asp-action="Details" asp-route-id="@Model.Id" asp-route-placeCollectionId="@Model.PlaceCollectionId">@Model.ExistingName</a>
             <i class="right angle icon divider"></i>
             <div class="active section">編集</div>
         }

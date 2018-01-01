@@ -58,7 +58,8 @@
             {
                 <div class="card">
                     <div class="content">
-                        <a asp-controller="Places" asp-action="Details" asp-route-id="@place.Id" class="header">@place.Name</a>
+                        <a asp-controller="Places" asp-action="Details" asp-route-placeCollectionId="@Model.Id" asp-route-id="@place.Id"
+                           class="header">@place.Name</a>
                         @if (!string.IsNullOrEmpty(place.Address))
                         {
                             <div class="meta">@place.Address</div>
@@ -92,7 +93,10 @@
 </div>
 
 @section Scripts {
-    <script>var rouletteDataUrl = "@Url.Action("RouletteData", new { Model.Id })";</script>
+    <script>
+        var placeCollectionId = "@Model.Id";
+        var rouletteDataUrl = "@Url.Action("RouletteData", new { Model.Id })";
+    </script>
     <script src="https://unpkg.com/hyperapp"></script>
     <script src="~/roulette.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/components/dimmer.min.js"></script>

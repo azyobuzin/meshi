@@ -115,7 +115,7 @@ function startRouletteApp(rouletteData) {
         var rouletteResultElement = null;
         if (state.currentPlace) {
             rouletteResultElement = h("div", { class: "ui large header" },
-                h("a", { href: "../../places/details/" + state.currentPlace.id },
+                h("a", { href: "../../places/details/" + placeCollectionId + "/" + state.currentPlace.id },
                     state.currentPlace.name
                 ),
             );
