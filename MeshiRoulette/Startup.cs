@@ -1,8 +1,11 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.IO;
+using System.Security.Claims;
 using MeshiRoulette.Data;
 using MeshiRoulette.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
@@ -34,6 +37,12 @@ namespace MeshiRoulette
                 options.UseSqlite(connectionString.ConnectionString);
             });
 
+            if (this.Configuration["DataProtectionRepository"] != null)
+            {
+                services.AddDataProtection()
+                    .PersistKeysToFileSystem(new DirectoryInfo(this.Configuration["DataProtectionRepository"]));
+            }
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -42,8 +51,10 @@ namespace MeshiRoulette
                 .AddTwitter(options =>
                 {
                     // 環境変数から指定
-                    options.ConsumerKey = this.Configuration["Authentication:Twitter:ConsumerKey"];
-                    options.ConsumerSecret = this.Configuration["Authentication:Twitter:ConsumerSecret"];
+                    options.ConsumerKey = this.Configuration["Authentication:Twitter:ConsumerKey"]
+                        ?? throw new Exception("Authentication:Twitter:ConsumerKey が設定されていません。");
+                    options.ConsumerSecret = this.Configuration["Authentication:Twitter:ConsumerSecret"]
+                        ?? throw new Exception("Authentication:Twitter:ConsumerSecret が設定されていません。");
 
                     options.SaveTokens = true;
 
@@ -59,8 +70,15 @@ namespace MeshiRoulette
             services.AddScoped(typeof(IPlaceCollectionAuthorization), typeof(PlaceCollectionAuthorization));
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDbContext dbContext)
         {
+            if (this.Configuration["AutoMigration"] == "true")
+            {
+                dbContext.Database.Migrate();
+            }
+
+            app.UseForwardedHeaders();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

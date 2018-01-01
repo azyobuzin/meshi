@@ -1,0 +1,6 @@
+bin/
+obj/
+node_modules/
+*.user
+launchSettings.json
+MeshiRoulette.sqlite3
