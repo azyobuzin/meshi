@@ -84,6 +84,7 @@ namespace MeshiRoulette.Controllers
             {
                 var place = new Place(viewModel.Name, viewModel.Latitude, viewModel.Longitude, viewModel.Address, placeCollectionId, DateTimeOffset.Now);
                 this._dbContext.Add(place);
+                await this._dbContext.SaveChangesAsync();
 
                 switch (await PlaceTagManager.SetTagsToPlaceAsync(this._dbContext, place.Id, tags))
                 {

@@ -1,10 +1,10 @@
-FROM microsoft/aspnetcore-build:2 AS builder
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builder
 
 COPY . /source/
 WORKDIR /source/MeshiRoulette
 RUN dotnet publish --output /app/ --configuration Release
 
-FROM microsoft/aspnetcore:2
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
 COPY --from=builder /app .
 

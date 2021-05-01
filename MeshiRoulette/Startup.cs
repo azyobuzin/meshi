@@ -37,6 +37,8 @@ namespace MeshiRoulette
                 options.UseSqlite(connectionString.ConnectionString);
             });
 
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
             if (this.Configuration["DataProtectionRepository"] != null)
             {
                 services.AddDataProtection()
@@ -65,7 +67,11 @@ namespace MeshiRoulette
 
             services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                // MapRoute を使う
+                options.EnableEndpointRouting = false;
+            });
 
             services.AddScoped(typeof(IPlaceCollectionAuthorization), typeof(PlaceCollectionAuthorization));
         }
@@ -82,7 +88,6 @@ namespace MeshiRoulette
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
 
             app.UseStaticFiles();

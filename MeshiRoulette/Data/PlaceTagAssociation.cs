@@ -10,13 +10,5 @@
 
         public long TagId { get; set; }
         public PlaceTag Tag { get; set; }
-
-        public PlaceTagAssociation() { }
-
-        public PlaceTagAssociation(long placeId, long tagId)
-        {
-            this.PlaceId = placeId;
-            this.TagId = tagId;
-        }
     }
 }

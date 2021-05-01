@@ -20,7 +20,6 @@ namespace MeshiRoulette.Controllers
         {
             var placeCollections = await this._dbContext.PlaceCollections
                 .Where(x => x.Accessibility == PlaceCollectionAccessibility.Public)
-                .OrderByDescending(x => x.CreatedAt)
                 .Select(placeCollection => new HomePlaceCollectionViewModel()
                 {
                     Id = placeCollection.Id,
@@ -32,6 +31,9 @@ namespace MeshiRoulette.Controllers
                     PlaceCount = placeCollection.Places.Count
                 })
                 .ToListAsync();
+
+            // DateTimeOffset で OrderByDescending できないので、ここでやる
+            placeCollections.Sort((x, y) => y.CreatedAt.CompareTo(x.CreatedAt));
 
             return View(placeCollections);
         }

@@ -39,7 +39,6 @@ namespace MeshiRoulette.Services
                 {
                     // 追加
                     var tagEntity = await dbContext.PlaceTags
-                        .AsNoTracking()
                         .SingleOrDefaultAsync(x => x.Name == clientTag)
                         .ConfigureAwait(false);
 
@@ -49,7 +48,7 @@ namespace MeshiRoulette.Services
                         dbContext.Add(tagEntity);
                     }
 
-                    dbContext.Add(new PlaceTagAssociation(placeId, tagEntity.Id));
+                    dbContext.Add(new PlaceTagAssociation() { PlaceId = placeId, Tag = tagEntity });
                 }
             }
 
