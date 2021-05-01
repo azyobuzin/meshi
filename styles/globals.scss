@@ -1,7 +1,18 @@
+$primary: #fc8d32;
+
 @import 'bootstrap';
 
-.default-container {
-  padding: $grid-gutter-width / 2;
+.pt-4rem {
+  padding-top: 4rem;
+}
+
+.pb-4rem {
+  padding-bottom: 4rem;
+}
+
+.py-4rem {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
 }
 
 $service-colors: (

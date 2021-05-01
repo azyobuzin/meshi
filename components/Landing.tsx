@@ -1,7 +1,7 @@
 import styles from './Landing.module.scss'
 import classNames from 'classnames'
+import Link from 'next/link'
 import type { ReactElement, ReactNode } from 'react'
-import { Button } from 'react-bootstrap'
 import { BsGeoAlt } from 'react-icons/bs'
 import { FaRegThumbsDown, FaRegThumbsUp } from 'react-icons/fa'
 
@@ -9,11 +9,11 @@ function Feature (props: { heading: ReactNode, children: ReactNode, icon: ReactN
   return (
     <section className='py-4'>
       <div className='row align-items-center'>
-        <div className='col-12 col-lg-10'>
+        <div className='col-lg-10'>
           <h1 className='display-5'>{props.heading}</h1>
           <div className='pt-4'>{props.children}</div>
         </div>
-        <div className={classNames('col-12', 'col-lg-2', { 'order-lg-first': props.isIconLeft }, styles.iconcol)}>
+        <div className={classNames('col-lg-2', { 'order-lg-first': props.isIconLeft }, styles.iconcol)}>
           {props.icon}
         </div>
       </div>
@@ -73,7 +73,7 @@ export default function Landing (): ReactElement {
           </p>
         </Feature>
         <hr />
-        <section className='py-4 text-center'>
+        <section className='pt-4 text-center'>
           <h1 className='display-5'>
             運任せで、もう迷わない
           </h1>
@@ -81,9 +81,17 @@ export default function Landing (): ReactElement {
             最後はルーレットにすべてお任せ。優柔不断でも、意見が割れても、運がなんとかしてくれます。
           </p>
         </section>
-        <section className='pb-4 d-grid gap-3 col-12 col-md-8 col-lg-6 col-xl-5 mx-auto'>
-          <Button variant='svc-foursquare'>Foursquareではじめる</Button>
-          <Button variant='svc-twitter'>Twitterではじめる</Button>
+        <section className='row row-cols-1 row-cols-md-2 g-4 py-4rem'>
+          <div className='col'>
+            <Link href='/login'>
+              <a className='btn btn-outline-primary btn-lg w-100'>はじめる</a>
+            </Link>
+          </div>
+          <div className='col'>
+            <Link href='/public'>
+              <a className='btn btn-outline-secondary btn-lg w-100'>コレクションを見る</a>
+            </Link>
+          </div>
         </section>
       </div>
     </main>
