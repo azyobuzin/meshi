@@ -1,0 +1,16 @@
+@import 'bootstrap';
+
+.default-container {
+  padding: $grid-gutter-width / 2;
+}
+
+$service-colors: (
+  "foursquare": #ffa71c,
+  "twitter": #1da1f2
+);
+
+@each $svc, $value in $service-colors {
+  .btn-svc-#{$svc} {
+    @include button-outline-variant($value, $light);
+  }
+}

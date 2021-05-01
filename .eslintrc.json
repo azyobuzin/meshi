@@ -1,0 +1,22 @@
+{
+  "extends": [
+    "standard-with-typescript",
+    "standard-jsx",
+    "standard-react"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "react/jsx-handler-names": "off",
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/sort-type-union-intersection-members": "error",
+    "@typescript-eslint/promise-function-async": "off"
+  }
+}

@@ -1,0 +1,41 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+.banner {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.bannerEyecatch {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  background-image: url("/home-eyecatch.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.bannerContent {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  backdrop-filter: blur(14px) brightness(80%);
+  text-shadow: 0 0 10px $dark;
+
+  h1 {
+    white-space: nowrap;
+  }
+}
+
+.iconcol {
+  text-align: center;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+
+  > * {
+    max-height: 96px;
+  }
+}
