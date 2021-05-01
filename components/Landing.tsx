@@ -11,7 +11,7 @@ function Feature (props: { heading: ReactNode, children: ReactNode, icon: ReactN
       <div className='row align-items-center'>
         <div className='col-lg-10'>
           <h1 className='display-5'>{props.heading}</h1>
-          <div className='pt-4'>{props.children}</div>
+          <div className='mt-4'>{props.children}</div>
         </div>
         <div className={classNames('col-lg-2', { 'order-lg-first': props.isIconLeft }, styles.iconcol)}>
           {props.icon}
@@ -37,10 +37,10 @@ function ThumbsIcon (): ReactElement {
 export default function Landing (): ReactElement {
   return (
     <main>
-      <div className={styles.banner} role='banner'>
+      <div className={styles.banner}>
         <div className={styles.bannerEyecatch} />
         <div className={`${styles.bannerContent} text-light`}>
-          <section className='container'>
+          <section className='container-xxl'>
             <h1 className='display-4' style={{ whiteSpace: 'nowrap' }}>
               まとめて、<wbr />選んで、<wbr />運まかせ。
             </h1>
@@ -51,7 +51,7 @@ export default function Landing (): ReactElement {
         </div>
       </div>
 
-      <div className='container'>
+      <div className='container-xxl'>
         <Feature
           heading='チェックインからはじめよう'
           icon={<BsGeoAlt size='100%' />}
@@ -77,11 +77,11 @@ export default function Landing (): ReactElement {
           <h1 className='display-5'>
             運任せで、もう迷わない
           </h1>
-          <p className='lead pt-4'>
+          <p className='lead mt-4'>
             最後はルーレットにすべてお任せ。優柔不断でも、意見が割れても、運がなんとかしてくれます。
           </p>
         </section>
-        <section className='row row-cols-1 row-cols-md-2 g-4 py-4rem'>
+        <section className='row row-cols-1 row-cols-md-2 g-4 my-5'>
           <div className='col'>
             <Link href='/login'>
               <a className='btn btn-outline-primary btn-lg w-100'>はじめる</a>

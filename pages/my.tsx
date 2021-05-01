@@ -48,12 +48,14 @@ export default function MyCollections (): ReactElement {
         <title>あなたのコレクション / 昼飯ルーレット</title>
       </Head>
 
-      {/* TODO: お気に入り */}
+      <main>
+        {/* TODO: お気に入り */}
 
-      <section className='py-4rem container'>
-        <h1 className='h3 mb-4'>あなたのコレクション</h1>
-        <Collections collections={collections} showCreator={false} />
-      </section>
+        <section className='my-5 container-xxl'>
+          <h1 className='h3 mb-4'>あなたのコレクション</h1>
+          <Collections collections={collections} showCreator={false} />
+        </section>
+      </main>
     </Layout>
   )
 }

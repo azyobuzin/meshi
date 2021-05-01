@@ -14,6 +14,7 @@
   left: 0;
   right: 0;
   z-index: -1;
+  background-color: $yellow-600; // 画像読み込み失敗用
   background-image: url("/home-eyecatch.jpg");
   background-size: cover;
   background-position: center;

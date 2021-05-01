@@ -48,7 +48,7 @@ export default function PublicCollections (): ReactElement {
         <title>公開コレクション / 昼飯ルーレット</title>
       </Head>
 
-      <main className='py-4rem container'>
+      <main className='my-5 container-xxl'>
         <h1 className='h3 mb-4'>公開コレクション</h1>
         <Collections collections={collections} showCreator />
       </main>

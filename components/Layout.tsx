@@ -6,9 +6,9 @@ function Header (): ReactElement {
   return (
     <header>
       <Navbar sticky='top' variant='light' bg='light'>
-        <Container>
+        <Container fluid='xxl'>
           <Link href='/' passHref prefetch={false}>
-            <Navbar.Brand role='banner'>昼飯ルーレット</Navbar.Brand>
+            <Navbar.Brand>昼飯ルーレット</Navbar.Brand>
           </Link>
         </Container>
       </Navbar>

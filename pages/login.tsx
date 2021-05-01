@@ -10,12 +10,10 @@ export default function Login (): ReactElement {
         <title>ログイン / 昼飯ルーレット</title>
       </Head>
 
-      <main className='py-4rem container'>
-        <div className='row align-items-start'>
-          <div className='col-md col-xl-7 pb-4'>
-            <h1 className='display-6 text-center'>ログイン</h1>
-          </div>
-          <div className='col-md col-xl-5 d-grid gap-2'>
+      <main className='my-5 container-xxl'>
+        <div className='mx-auto' style={{ maxWidth: '350px' }}>
+          <h1 className='h3 text-center mb-4'>ログイン</h1>
+          <div className='d-grid gap-2'>
             <Button variant='svc-foursquare'>Foursquare</Button>
             <Button variant='svc-twitter'>Twitter</Button>
           </div>
