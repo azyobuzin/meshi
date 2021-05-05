@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import type { ReactElement } from 'react'
-import { Collections } from '../components/Collections'
+import Collections from '../components/Collections'
 import Layout from '../components/Layout'
 
 const collections = [
